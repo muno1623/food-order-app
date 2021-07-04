@@ -4,10 +4,13 @@ import { useContext, useState } from "react";
 import CartContext from "../store/cart-context";
 import CartItems from "./CartItems";
 import Checkout from "./Checkout";
-import { func } from "prop-types";
+import { Fragment } from "react";
 
 const Cart = (props) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [orderBtnClicked, setOrderBtnClicked] = useState(false);
+
   function orderBtnHandler() {
     setOrderBtnClicked(true);
   }
@@ -19,6 +22,17 @@ const Cart = (props) => {
 
   const onRemove = (id) => {
     cartCtx.removeItem(id);
+  };
+
+  const onSubmitHandler = (orderData) => {
+    setIsSubmitting(true);
+    console.log({
+      orderItems: cartCtx.items,
+      orderData: orderData,
+    });
+    setIsSubmitting(false);
+    setIsSubmitted(true);
+    cartCtx.clearItem();
   };
 
   const cartItems = cartCtx.items.map((items) => {
@@ -47,16 +61,42 @@ const Cart = (props) => {
       )}
     </div>
   );
-  
-  return (
-    <Modal onClose={props.onHideCart}>
+
+  const cartModalContent = (
+    <Fragment>
       <div className={styles["cart-items"]}>{cartItems}</div>
       <div className={styles.total}>
         <span>Total Amount</span>
         <span>{totalAmount}</span>
       </div>
       {!orderBtnClicked && modalActions}
-      {orderBtnClicked && <Checkout onCancel={props.onHideCart}></Checkout>}
+      {orderBtnClicked && (
+        <Checkout
+          onConfirm={onSubmitHandler}
+          onCancel={props.onHideCart}
+        ></Checkout>
+      )}
+    </Fragment>
+  );
+
+  const isSubmittingContent = <p>Submmitng Order</p>;
+
+  const isSubmittedContent = (
+    <Fragment>
+      <p>Order Submitted</p>
+      <div className={styles.actions}>
+        <button className={styles["button--alt"]} onClick={props.onHideCart}>
+          Close
+        </button>
+      </div>
+    </Fragment>
+  );
+
+  return (
+    <Modal onClose={props.onHideCart}>
+      {!isSubmitted && cartModalContent}
+      {isSubmitting && isSubmittingContent}
+      {isSubmitted && isSubmittedContent}
     </Modal>
   );
 };

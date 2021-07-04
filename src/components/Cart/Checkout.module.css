@@ -1,7 +1,8 @@
 .form {
     margin: 1rem 0;
-    height: 19rem;
-    overflow: auto;
+    padding-bottom: 1rem;
+    height: 15rem;
+    overflow: scroll;
   }
   
   .control {
@@ -61,4 +62,9 @@
   .invalid input {
     border-color: #aa0b20;
     background-color: #ffeff1;
+  }
+
+  .para 
+  {
+    color:red
   }
